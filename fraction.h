@@ -1,9 +1,13 @@
 #pragma once
 
-class Fraction {
+#include <iostream>
+
+using namespace std;
+
+class Fraction
+{
     public:
-        Fraction();
-        Fraction(int numerator, int denominator = 1, bool reduce = false);
+        Fraction(int numerator = 0, int denominator = 1, bool reduce = false);
 
         int getNumerator() const;
         void setNumerator(int numerator);
@@ -18,11 +22,16 @@ class Fraction {
         Fraction operator-(const Fraction& other) const;
         Fraction operator*(const Fraction& other) const;
         Fraction operator/(const Fraction& other) const;
+        bool operator==(const Fraction& other) const;
+        bool operator!=(const Fraction& other) const;
 
+        string toLaTeX() const;
         friend ostream& operator<<(ostream& os, const Fraction& fraction);
         unsigned int getPrintLength() const;
 
         operator double() const;
+
+        static Fraction parseString(const string& str);
 
     private:
         int numerator, denominator;

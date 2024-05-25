@@ -1,35 +1,36 @@
 #include <iostream>
 #include <numeric>
 #include <tgmath.h>
+#include <regex>
 
 #include "fraction.h"
 
 using namespace std;
 
-Fraction::Fraction() {
-    setNumerator(0);
-    setDenominator(1);
-}
-
-Fraction::Fraction(int num, int den, bool red) {
+Fraction::Fraction(int num, int den, bool red)
+{
     setNumerator(num);
     setDenominator(den);
     if (red) reduce();
 }
 
-int Fraction::getNumerator() const {
+int Fraction::getNumerator() const
+{
     return numerator;
 }
 
-void Fraction::setNumerator(int num) {
+void Fraction::setNumerator(int num)
+{
     numerator = num;
 }
 
-int Fraction::getDenominator() const {
+int Fraction::getDenominator() const
+{
     return denominator;
 }
 
-void Fraction::setDenominator(int den) {
+void Fraction::setDenominator(int den)
+{
     if (den == 0)
         throw invalid_argument("Cannot divide by 0.");
 
@@ -93,14 +94,90 @@ Fraction Fraction::operator/(const Fraction& other) const
     );
 }
 
+bool Fraction::operator==(const Fraction& other) const
+{
+    Fraction firstReduced = getReduced();
+    Fraction secondReduced = other.getReduced();
+
+    return (firstReduced.getNumerator() == secondReduced.getNumerator() &&
+        firstReduced.getDenominator() == secondReduced.getDenominator());
+}
+
+bool Fraction::operator!=(const Fraction& other) const
+{
+    return !(*this == other);
+}
+
+string Fraction::toLaTeX() const
+{
+    string retVal = ((getNumerator() < 0) == (getDenominator() < 0)) ? "$" : "$-";
+
+    if (abs(getDenominator()) == 1)
+        return retVal + to_string(abs(getNumerator())) + "$";
+
+    return retVal + "\\frac{" + to_string(abs(getNumerator())) + "}{" + to_string(abs(getDenominator())) + "}$";
+}
+
 unsigned int Fraction::getPrintLength() const
 {
-    return ceil(log10(getNumerator())) + 1 + ceil(log10(getDenominator()));
+    Fraction reduced = getReduced();
+    unsigned int length = (reduced.getNumerator() != 0) ? (floor(log10(abs(reduced.getNumerator()))) + 1) : 1;
+    if (reduced.getDenominator() != 1) { // "Over 1" gets simplified to the numerator
+        length++; // '/' sign
+        length += floor(log10(reduced.getDenominator())) + 1;
+    }
+    if (reduced.getNumerator() < 0) length++;
+
+    return length;
 }
 
 Fraction::operator double() const
 {
     return (double)getNumerator() / getDenominator();
+}
+
+string getFirstRegexMatch(const string& str, const regex& regexObj)
+{
+    auto begin = sregex_iterator(str.begin(), str.end(), regexObj);
+    auto end = sregex_iterator();
+
+    return (distance(begin, end) != 0) ? ((smatch)*(sregex_iterator)begin).str() : "";
+}
+
+Fraction Fraction::parseString(const string& originalString)
+{
+    regex leadingSpaces = regex("^ +");
+    regex leadingNumber = regex("^-?[0-9]+");
+
+    string str = originalString;
+
+    // Remove leading spaces
+    str = regex_replace(str, leadingSpaces, "");
+
+    size_t slashPos = str.find('/');
+    if (slashPos == string::npos || slashPos == str.size() - 1) {
+        // Fetch uninterrupted sequence of numbers directly after leading spaces
+        return Fraction(stoi(getFirstRegexMatch(str, leadingNumber)));
+    }
+
+    string numeratorSection = str.substr(0, slashPos);
+    string denominatorSection = str.substr(slashPos + 1, str.size());
+    denominatorSection = regex_replace(denominatorSection, leadingSpaces, "");
+
+    int numerator, denominator;
+    try {
+        numerator = stoi(getFirstRegexMatch(numeratorSection, leadingNumber));
+    } catch(invalid_argument& e) {
+        numerator = 0;
+    }
+
+    try {
+        denominator = stoi(getFirstRegexMatch(denominatorSection, leadingNumber));
+    } catch(invalid_argument& e) {
+        denominator = 0;
+    }
+
+    return Fraction(numerator, denominator);
 }
 
 int Fraction::gcd(int a, int b) const
@@ -121,6 +198,10 @@ int Fraction::gcd(int a, int b) const
 ostream& operator<<(ostream& os, const Fraction& fraction)
 {
     Fraction reduced = fraction.getReduced();
-    os << reduced.getNumerator() << '/' << reduced.getDenominator();
+
+    os << reduced.getNumerator();
+    if (reduced.getDenominator() != 1)
+        os << '/' << reduced.getDenominator();
+
     return os;
 }
