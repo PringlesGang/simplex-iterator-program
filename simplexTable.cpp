@@ -88,8 +88,8 @@ void SimplexTable::printLaTeX() const
         for (unsigned int column = 0; column < getColumnAmount(); column++)
             cout << " & " << getCell(column, row).toLaTeX();
 
-        cout << " \\\\";
-        if (row == getRowAmount() - 1) cout << " \\hline";
+        if (row != getRowAmount() - 1) cout << " \\\\";
+        if (row == getRowAmount() - 2) cout << " \\hline";
         cout << endl;
     }
 
