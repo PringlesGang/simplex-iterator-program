@@ -7,7 +7,8 @@ using namespace std;
 class Fraction
 {
     public:
-        Fraction(int numerator = 0, int denominator = 1, bool reduce = false);
+        Fraction(int numerator = 0, int denominator = 1);
+        Fraction(const Fraction& other);
 
         int getNumerator() const;
         void setNumerator(int numerator);
@@ -18,12 +19,35 @@ class Fraction
         Fraction getReduced() const;
         void reduce();
 
+        void operator=(const Fraction& other);
+        void operator=(const int other);
+
         Fraction operator+(const Fraction& other) const;
+        void operator+=(const Fraction& other);
+        Fraction operator+(const int other) const;
+        void operator+=(const int other);
+
         Fraction operator-(const Fraction& other) const;
+        void operator-=(const Fraction& other);
+        Fraction operator-(const int other) const;
+        void operator-=(const int other);
+
         Fraction operator*(const Fraction& other) const;
+        void operator*=(const Fraction& other);
+        Fraction operator*(const int other) const;
+        void operator*=(const int other);
+
         Fraction operator/(const Fraction& other) const;
+        void operator/=(const Fraction& other);
+        Fraction operator/(const int other) const;
+        void operator/=(const int other);
+        void invert();
+        Fraction getInverted() const;
+
         bool operator==(const Fraction& other) const;
         bool operator!=(const Fraction& other) const;
+        bool operator==(const int other) const;
+        bool operator!=(const int other) const;
 
         string toLaTeX() const;
         friend ostream& operator<<(ostream& os, const Fraction& fraction);

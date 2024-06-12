@@ -7,11 +7,17 @@
 
 using namespace std;
 
-Fraction::Fraction(int num, int den, bool red)
+Fraction::Fraction(int num, int den)
 {
     setNumerator(num);
     setDenominator(den);
-    if (red) reduce();
+    reduce();
+}
+
+Fraction::Fraction(const Fraction& other)
+{
+    setNumerator(other.getNumerator());
+    setDenominator(other.getDenominator());
 }
 
 int Fraction::getNumerator() const
@@ -58,39 +64,144 @@ void Fraction::reduce()
     setDenominator(abs(getDenominator()) / divisor);
 }
 
+void Fraction::operator=(const Fraction& other)
+{
+    setNumerator(other.getNumerator());
+    setDenominator(other.getDenominator());
+}
+
+void Fraction::operator=(const int other)
+{
+    setNumerator(other);
+    setDenominator(1);
+}
+
 Fraction Fraction::operator+(const Fraction& other) const
 {
     return Fraction(
         getNumerator() * other.getDenominator() + other.getNumerator() * getDenominator(),
-        getDenominator() * other.getDenominator(),
-        true
+        getDenominator() * other.getDenominator()
     );
+}
+
+void Fraction::operator+=(const Fraction& other)
+{
+    setNumerator(getNumerator() * other.getDenominator() + other.getNumerator() * getDenominator());
+    setDenominator(getDenominator() * other.getDenominator());
+    reduce();
+}
+
+Fraction Fraction::operator+(const int other) const
+{
+    return Fraction(
+        getNumerator() + other * getDenominator(),
+        getDenominator()
+    );
+}
+
+void Fraction::operator+=(const int other)
+{
+    setNumerator(getNumerator() + other * getDenominator());
 }
 
 Fraction Fraction::operator-(const Fraction& other) const
 {
     return Fraction(
         getNumerator() * other.getDenominator() - other.getNumerator() * getDenominator(),
-        getDenominator() * other.getDenominator(),
-        true
+        getDenominator() * other.getDenominator()
     );
+}
+
+void Fraction::operator-=(const Fraction& other)
+{
+    setNumerator(getNumerator() * other.getDenominator() - other.getNumerator() * getDenominator());
+    setDenominator(getDenominator() * other.getDenominator());
+    reduce();
+}
+
+Fraction Fraction::operator-(const int other) const
+{
+    return Fraction(
+        getNumerator() - other * getDenominator(),
+        getDenominator()
+    );
+}
+
+void Fraction::operator-=(const int other)
+{
+    setNumerator(getNumerator() - other * getDenominator());
 }
 
 Fraction Fraction::operator*(const Fraction& other) const
 {
     return Fraction(
         getNumerator() * other.getNumerator(),
-        getDenominator() * other.getDenominator(),
-        true
+        getDenominator() * other.getDenominator()
     );
+}
+
+void Fraction::operator*=(const Fraction& other)
+{
+    setNumerator(getNumerator() * other.getNumerator());
+    setDenominator(getDenominator() * other.getDenominator());
+    reduce();
+}
+
+Fraction Fraction::operator*(const int other) const
+{
+    return Fraction(
+        getNumerator() * other,
+        getDenominator()
+    );
+}
+
+void Fraction::operator*=(const int other)
+{
+    setNumerator(getNumerator() * other);
+    reduce();
 }
 
 Fraction Fraction::operator/(const Fraction& other) const
 {
     return Fraction(
         getNumerator() * other.getDenominator(),
-        getDenominator() * other.getNumerator(),
-        true
+        getDenominator() * other.getNumerator()
+    );
+}
+
+void Fraction::operator/=(const Fraction& other)
+{
+    setNumerator(getNumerator() * other.getDenominator());
+    setDenominator(getDenominator() * other.getNumerator());
+    reduce();
+}
+
+Fraction Fraction::operator/(const int other) const
+{
+    return Fraction(
+        getNumerator(),
+        getDenominator() * other
+    );
+}
+
+void Fraction::operator/=(const int other)
+{
+    setDenominator(getDenominator() * other);
+    reduce();
+}
+
+void Fraction::invert()
+{
+    int numerator = getNumerator();
+    setNumerator(getDenominator());
+    setDenominator(numerator);
+}
+
+Fraction Fraction::getInverted() const
+{
+    return Fraction(
+        getDenominator(),
+        getNumerator()
     );
 }
 
@@ -104,6 +215,19 @@ bool Fraction::operator==(const Fraction& other) const
 }
 
 bool Fraction::operator!=(const Fraction& other) const
+{
+    return !(*this == other);
+}
+
+bool Fraction::operator==(const int other) const
+{
+    Fraction reduced = getReduced();
+
+    return (reduced.getDenominator() == 1 &&
+        reduced.getNumerator() == other);
+}
+
+bool Fraction::operator!=(const int other) const
 {
     return !(*this == other);
 }
