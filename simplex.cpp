@@ -50,10 +50,10 @@ unsigned int getUInt(unsigned int lowerBound = 0, unsigned int upperBound = UINT
 SimplexTable* inputTable()
 {
     cout << "Please enter the amount of columns (> 1): ";
-    unsigned int columns = getUInt(1);
+    unsigned int columns = getUInt(2);
 
     cout << "Please enter the amount of rows (> 1): ";
-    unsigned int rows = getUInt(1);
+    unsigned int rows = getUInt(2);
 
     cout << endl;
     SimplexTable* table = new SimplexTable(columns, rows);
