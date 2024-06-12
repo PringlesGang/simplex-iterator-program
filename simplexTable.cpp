@@ -115,19 +115,24 @@ void SimplexTable::pivot(unsigned int pivotColumn, unsigned int pivotRow)
         for (unsigned int row = 0; row < getRowAmount(); row++) {
             if (row == pivotRow) continue;
 
+            // Non-pivot row, non-pivot column
             Fraction newValue = getCell(column, row) - columnVal * getCell(pivotColumn, row) / pivot;
             setCell(column, row, newValue);
         }
 
+        // Pivot row, non-pivot column
         setCell(column, pivotRow, columnVal / pivot);
     }
 
     for (unsigned int row = 0; row < getRowAmount(); row++) {
         if (row == pivotRow) continue;
-        setCell(pivotColumn, row, Fraction(-1) * getCell(pivotColumn, row) / pivot);
+
+        // Non-pivot row, pivot column
+        setCell(pivotColumn, row, getCell(pivotColumn, row) / pivot * -1);
     }
 
-    setCell(pivotColumn, pivotRow, Fraction(1) / pivot);
+    // Pivot row, pivot column
+    table[pivotColumn][pivotRow].invert();
 
     if (pivotColumn == 0) return;
     VarName temp = columnNames[pivotColumn - 1];

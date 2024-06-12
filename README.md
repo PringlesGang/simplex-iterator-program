@@ -19,7 +19,7 @@ Provide a coordinate, and the value the corresponding cell needs to be changed t
 Print out LaTeX code for the current table.
 
 ### `r`: reduce all fractions
-Reduce all fractions in the table---dividing the numerator and denominator by their greatest common divisor.
+Reduce all fractions in the table—dividing the numerator and denominator by their greatest common divisor.
 
 ### `q`: quit
 Exit the program.
